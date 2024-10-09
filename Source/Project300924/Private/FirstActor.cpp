@@ -5,14 +5,15 @@
 
 AFirstActor::AFirstActor()
 {
-	
+	_Collider = CreateDefaultSubobject<UBoxComponent>(TEXT("Collider"));
+	RootComponent = _Collider;
 }
 
 
 void AFirstActor::BeginPlay()
 {
 	Super::BeginPlay();
-	//_Collider->OnComponentHit.AddUniqueDynamic((this,))
+	_Collider->OnComponentHit.AddUniqueDynamic(this, &AFirstActor::Handle_ColliderHit);
 	
 }
 

@@ -6,6 +6,9 @@
 #include "Components/BoxComponent.h"
 #include "HealthComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHealthDeadSignature,AController*, causer);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FHealthDamagedSignature, float, newHealth, float, maxHealth, float, changeInHealth);
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class PROJECT300924_API UHealthComponent : public UActorComponent
 {
@@ -13,9 +16,16 @@ class PROJECT300924_API UHealthComponent : public UActorComponent
 
 public:
 	UHealthComponent();
+	UPROPERTY(BlueprintAssignable)
+	FHealthDeadSignature OnDead;
+	UPROPERTY(BlueprintAssignable)
+	FHealthDamagedSignature OnDamaged;
 
 protected:
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float _MaxHealth;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	float _CurrentHealth;
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
 	TObjectPtr<UArrowComponent> _Arrow;
 	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
@@ -27,4 +37,9 @@ protected:
 	UFUNCTION()
 	void Handle_ColliderHit(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,
 		class AController* InstigatedBy, AActor* DamageCauser);
+private:
+	UFUNCTION()
+	void DamageTaken(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,
+		class AController* InstigatedBy, AActor* DamageCauser);
+	
 };
